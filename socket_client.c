@@ -108,29 +108,30 @@ int s=0; //socket
 int r=0;
 int bytes_received=0;
 #define BUFFER_SIZE 1000
-char recv_buf[BUFFER_SIZE];
+char send_buf[BUFFER_SIZE] = "Hola pepe por socket !!! ";
 
 void connect_and_receive()
 {
+   total = strlen(send_buf);
     while(1)
     {
 
         if(s == 0)
         {
-            if(connect_to_socket("192.168.1.24", "2000") == 0)
+            if(connect_to_socket("192.168.4.1", "12345") == 0)
                 ESP_LOGI(TAG, "Conectado a puerto 2000 !");
         }
         
         do {
-            r = read(s, recv_buf + bytes_received , BUFFER_SIZE -1 - bytes_received );
-            bytes_received += r;
+            r = send(s, send_buf + bytes_sent , total - bytes_sent - 1);
+            bytes_sent += r;
 
         } while(r > 0);
 
-        ESP_LOGI(TAG, "%s", recv_buf);
+        //ESP_LOGI(TAG, "%s", recv_buf);
         close(s);
         s=0;
-        r = bytes_received = 0;
+        r = bytes_sent = 0;
 
         vTaskDelay(1000 / portTICK_PERIOD_MS);
     }
