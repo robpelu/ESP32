@@ -1,7 +1,6 @@
+  
 /*  WiFi softAP Example
-
    This example code is in the Public Domain (or CC0 licensed, at your option.)
-
    Unless required by applicable law or agreed to in writing, this
    software is distributed on an "AS IS" BASIS, WITHOUT WARRANTIES OR
    CONDITIONS OF ANY KIND, either express or implied.
@@ -24,13 +23,12 @@
 #include <netinet/in.h> /* struct sockaddr_in, struct sockaddr */
 
 /* The examples use WiFi configuration that you can set via 'make menuconfig'.
-
    If you'd rather not, just change the below entries to strings with
    the config you want - ie #define EXAMPLE_WIFI_SSID "mywifissid"
 */
 #define EXAMPLE_ESP_WIFI_SSID      "taller_esp32"
 #define EXAMPLE_ESP_WIFI_PASS      "utec12345"
-#define EXAMPLE_MAX_STA_CONN       1
+#define EXAMPLE_MAX_STA_CONN       5
 
 /* FreeRTOS event group to signal when we are connected*/
 static EventGroupHandle_t s_wifi_event_group;
@@ -96,7 +94,7 @@ void socket_server_task(void *param)
     fd_set readfds;
     int sock=0;
 
-    if( (sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP) < 0)) {
+    if( (sock = socket(AF_INET, SOCK_STREAM, IPPROTO_TCP)) < 0) {
         ESP_LOGE(TAG, "socket: %d %s", sock, strerror(errno));
         goto END;
     }
@@ -107,6 +105,7 @@ void socket_server_task(void *param)
     serverAddress.sin_family = AF_INET;
     serverAddress.sin_addr.s_addr = htonl(INADDR_ANY);
     serverAddress.sin_port = htons(12345);
+
     int rc  = bind(sock, (struct sockaddr *)&serverAddress, sizeof(serverAddress));
     if (rc < 0) {
         ESP_LOGE(TAG, "bind: %d %s", rc, strerror(errno));
@@ -170,3 +169,4 @@ void app_main()
 
 
 }
+
