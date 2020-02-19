@@ -109,7 +109,14 @@ char send_buf[BUFFER_SIZE];
 
 void connect_and_receive()
 {
-	vTaskDelay(10000 / portTICK_PERIOD_MS);
+	//espera a que el bit WIFI_CONNECTED_BIT se haya prendido. Eso se hace una vez que se obtiene la IP
+	xEventGroupWaitBits(
+            s_wifi_event_group,   /* The event group being tested. */
+            WIFI_CONNECTED_BIT, /* The bits within the event group to wait for. */
+            pdFALSE,        /* BIT_0 & BIT_4 should be cleared before returning. */
+            pdFALSE,       /* Don't wait for both bits, either bit will do. */
+            portMAX_DELAY);/* Wait a maximum of 100ms for either bit to be set. */
+
 
    //int total = strlen(send_buf);
     int bytes_sent =0;
@@ -125,6 +132,7 @@ void connect_and_receive()
 
 	//armar la consulta HTTP GET
 	sprintf(send_buf, "GET /%s HTTP/1.1\r\nHost:%s \r\n\r\n\r\n", "esp32/pepito.php?nombre=Robert", "pillsandcare.com");
+
 
         do {
             r = send(s, send_buf + bytes_sent , BUFFER_SIZE - bytes_sent - 1, 0);
